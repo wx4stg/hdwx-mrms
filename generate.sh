@@ -30,4 +30,3 @@ then
     $condaRootPath/envs/$condaEnvName/bin/python3 mrmsplot.py
     $condaRootPath/envs/$condaEnvName/bin/python3 cleanup.py
 fi
-rm status.txt
