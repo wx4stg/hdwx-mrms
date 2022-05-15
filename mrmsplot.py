@@ -17,6 +17,8 @@ from pathlib import Path
 import json
 from atomicwrites import atomic_write
 
+axExtent = [-129, -65, 23.5, 51]
+
 def set_size(w,h, ax=None):
     if not ax: ax=plt.gca()
     l = ax.figure.subplotpars.left
@@ -144,10 +146,11 @@ def writeJson(productID, validTime):
 
 def plotRadar(radarFilePath):
     radarDS = xr.open_dataset(radarFilePath, engine="cfgrib")
+    radarDS = radarDS.sel(latitude=slice(axExtent[3], axExtent[2]), longitude=slice(axExtent[0]+360, axExtent[1]+360))
     validTime = Timestamp(radarDS.time.data).to_pydatetime()
     fig = plt.figure()
     px = 1/plt.rcParams["figure.dpi"]
-    fig.set_size_inches(3840*px, 2160*px)
+    fig.set_size_inches(2560*px, 1440*px)
     ax = plt.axes(projection=ccrs.epsg(3857))
     norm, cmap = ctables.registry.get_with_steps("NWSReflectivity", 5, 5)
     cmap.set_under("#00000000")
@@ -155,7 +158,7 @@ def plotRadar(radarFilePath):
     rdr = ax.pcolormesh(radarDS.longitude, radarDS.latitude, radarDS.unknown, cmap=cmap, norm=norm, transform=ccrs.PlateCarree(), zorder=1)
     ax.add_feature(cfeat.STATES.with_scale("50m"), linewidth=0.5, zorder=4)
     ax.add_feature(cfeat.COASTLINE.with_scale("50m"), linewidth=0.5, zorder=5)
-    set_size(3840*px, 2160*px, ax=ax)
+    set_size(2560*px, 1440*px, ax=ax)
     ax.set_extent([-129, -65, 23.5, 51], crs=ccrs.PlateCarree())
     extent = ax.get_tightbbox(fig.canvas.get_renderer()).transformed(fig.dpi_scale_trans.inverted())
     Path(path.join(basePath, "output", "gisproducts", "radar", "RALA", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"))).mkdir(parents=True, exist_ok=True)
