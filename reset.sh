@@ -6,3 +6,4 @@ rm -rf output/
 rm -rf input/
 rm status.txt
 rm firstPlotDT.txt
+rm *lock.txt

@@ -2,7 +2,7 @@
 # MRMS grib2 data fetching script for python-based HDWX
 # Created 29 April 2022 by Sam Gardner <stgardner4@tamu.edu>
 
-from os import path, remove, listdir
+from os import path, remove, listdir, system
 from pathlib import Path
 import pandas as pd
 from datetime import datetime as dt
@@ -10,8 +10,15 @@ import json
 import requests
 import gzip
 import shutil
+import atexit
 
 basePath = path.realpath(path.dirname(__file__))
+
+@atexit.register
+def exitFunc():
+    print("Fetching complete!")
+    remove(path.join(basePath, "fetcher-lock.txt"))
+    system("bash generate.sh &")
 
 def downloadFile(fileName):
     output = path.join(basePath, "input", fileName)

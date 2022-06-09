@@ -2,8 +2,7 @@
 # Multi-Radar Multi-Sensor based mosaicing for python-based HDWX
 # Created 19 April 2022 by Sam Gardner <stgardner4@tamu.edu>
 
-from asyncore import write
-from os import path, listdir, remove, chmod
+from os import path, listdir, remove, chmod, system
 import xarray as xr
 from matplotlib import pyplot as plt
 from matplotlib import image as mpimage
@@ -16,8 +15,15 @@ from datetime import datetime as dt
 from pathlib import Path
 import json
 from atomicwrites import atomic_write
+import atexit
 
 axExtent = [-129, -65, 23.5, 51]
+
+@atexit.register
+def exitFunc():
+    print("Plotting complete!")
+    remove(path.join(basePath, "plotter-lock.txt"))
+    system("bash generate.sh &")
 
 def set_size(w,h, ax=None):
     if not ax: ax=plt.gca()
