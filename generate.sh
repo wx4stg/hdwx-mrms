@@ -52,5 +52,9 @@ then
             $condaRootPath/envs/$condaEnvName/bin/python3 mrmsplot.py &
             echo -n $! > plotter-lock.txt
     fi
-    $condaRootPath/envs/$condaEnvName/bin/python3 cleanup.py
+    if [ "$1" != "--no-cleanup" ]
+    then
+        echo "Cleaning..."
+        $condaRootPath/envs/$condaEnvName/bin/python3 cleanup.py
+    fi
 fi

@@ -23,7 +23,7 @@ axExtent = [-129, -65, 23.5, 51]
 def exitFunc():
     print("Plotting complete!")
     remove(path.join(basePath, "plotter-lock.txt"))
-    system("bash generate.sh &")
+    system("bash generate.sh --no-cleanup &")
 
 def set_size(w,h, ax=None):
     if not ax: ax=plt.gca()

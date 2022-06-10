@@ -18,7 +18,7 @@ basePath = path.realpath(path.dirname(__file__))
 def exitFunc():
     print("Fetching complete!")
     remove(path.join(basePath, "fetcher-lock.txt"))
-    system("bash generate.sh &")
+    system("bash generate.sh --no-cleanup &")
 
 def downloadFile(fileName):
     output = path.join(basePath, "input", fileName)
