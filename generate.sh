@@ -17,7 +17,14 @@ then
 else
     condaEnvName="HDWX"
 fi
-
+if [ -f ../HDWX_helpers.py ]
+then
+    if [ -f ./HDWX_helpers.py ]
+    then
+        rm ./HDWX_helpers.py
+    fi
+    cp ../HDWX_helpers.py ./
+fi
 if [ -f $condaRootPath/envs/$condaEnvName/bin/python3 ]
 then
     if [ -f fetcher-lock.txt ]

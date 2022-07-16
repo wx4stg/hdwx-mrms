@@ -3,3 +3,4 @@ output/
 firstPlotDT.txt
 status.txt
 *lock.txt
+HDWX_helpers.py
