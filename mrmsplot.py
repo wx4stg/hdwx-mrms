@@ -3,6 +3,7 @@
 # Created 19 April 2022 by Sam Gardner <stgardner4@tamu.edu>
 
 from os import path, listdir, remove, chmod, system
+from turtle import color
 import xarray as xr
 from matplotlib import pyplot as plt
 from matplotlib import image as mpimage
@@ -61,24 +62,10 @@ def plotRadar(radarFilePath):
     fig.savefig(path.join(basePath, "output", "gisproducts", "radar", "RALA", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")), transparent=True, bbox_inches=extent)
     if hasHelpers:
         HDWX_helpers.writeJson(basePath, 0, validTime, validTime.strftime("%M.png"), validTime, ["23.5,-129", "51,-65"], 60)
-    fig.set_size_inches(1920*px, 1080*px)
-    ax.set_box_aspect(9/16)
-    cbax = fig.add_axes([.01,0.075,(ax.get_position().width/3),.02])
-    fig.colorbar(rdr, cax=cbax, orientation="horizontal", extend="max")
-    cbax.set_xlabel("Reflectivity (dBZ)")
-    tax = fig.add_axes([ax.get_position().x0+cbax.get_position().width+.01,0.045,(ax.get_position().width/3),.05])
-    title = tax.text(0.5, 0.5, "National MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"), horizontalalignment="center", verticalalignment="center", fontsize=16)
-    tax.set_xlabel("Python HDWX -- Send bugs to stgardner4@tamu.edu\nData provided by NOAA/NSSL")
-    plt.setp(tax.spines.values(), visible=False)
-    tax.tick_params(left=False, labelleft=False)
-    tax.tick_params(bottom=False, labelbottom=False)
-    lax = fig.add_axes([(.99-(ax.get_position().width/3)),0,(ax.get_position().width/3),.1])
-    lax.set_aspect(2821/11071)
-    lax.axis("off")
-    plt.setp(lax.spines.values(), visible=False)
-    atmoLogo = mpimage.imread(path.join(basePath, "assets", "atmoLogo.png"))
-    lax.imshow(atmoLogo)
-    ax.set_position([.005, cbax.get_position().y0+cbax.get_position().height+.005, .99, (.99-(cbax.get_position().y0+cbax.get_position().height))])
+        HDWX_helpers.dressImage(fig, ax, "National MRMS Reflectivity At Lowest Altitude", validTime=validTime, notice="Data provided by NOAA/NSSL", plotHandle=rdr, colorbarLabel="Reflectivity (dBZ)")
+        title = fig.axes[2].get_children()[0]
+    else:
+        title = None
     Path(path.join(basePath, "output", "products", "radar", "national", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"))).mkdir(parents=True, exist_ok=True)
     fig.savefig(path.join(basePath, "output", "products", "radar", "national", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")))
     if hasHelpers:
@@ -86,7 +73,8 @@ def plotRadar(radarFilePath):
     ax.add_feature(USCOUNTIES.with_scale("5m"), edgecolor="green", linewidth=0.25, zorder=2)
     ax.set_extent([-110, -85, 23.5, 37])
     ax.set_box_aspect(9/16)
-    title.set_text("Regional MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"))
+    if title is not None:
+        title.set_text("Regional MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"))
     Path(path.join(basePath, "output", "products", "radar", "regional", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"))).mkdir(parents=True, exist_ok=True)
     fig.savefig(path.join(basePath, "output", "products", "radar", "regional", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")))
     if hasHelpers:
@@ -95,7 +83,8 @@ def plotRadar(radarFilePath):
     ax.add_feature(roads, edgecolor="red", linewidth=0.25, zorder=3)
     ax.set_extent([-101, -92.4, 28.6, 32.5])
     ax.set_box_aspect(9/16)
-    title.set_text("Local MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"))
+    if title is not None:
+        title.set_text("Local MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"))
     Path(path.join(basePath, "output", "products", "radar", "local", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"))).mkdir(parents=True, exist_ok=True)
     fig.savefig(path.join(basePath, "output", "products", "radar", "local", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")))
     if hasHelpers:
