@@ -5,8 +5,9 @@
 from os import path, listdir, remove, chmod, system
 from turtle import color
 import xarray as xr
+import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib import image as mpimage
+from matplotlib import colors as pltcolors
 from cartopy import crs as ccrs
 from cartopy import feature as cfeat
 from metpy.plots import ctables
@@ -14,8 +15,6 @@ from metpy.plots import USCOUNTIES
 from pandas import Timestamp
 from datetime import datetime as dt
 from pathlib import Path
-import json
-from atomicwrites import atomic_write
 import atexit
 
 basePath = path.abspath(path.dirname(__file__))
@@ -49,10 +48,16 @@ def plotRadar(radarFilePath):
     px = 1/plt.rcParams["figure.dpi"]
     fig.set_size_inches(2560*px, 1440*px)
     ax = plt.axes(projection=ccrs.epsg(3857))
-    norm, cmap = ctables.registry.get_with_steps("NWSReflectivity", 5, 5)
-    cmap.set_under("#00000000")
-    cmap.set_over("black")
-    rdr = ax.pcolormesh(radarDS.longitude, radarDS.latitude, radarDS.unknown, cmap=cmap, norm=norm, transform=ccrs.PlateCarree(), zorder=1)
+    specR = plt.cm.Spectral_r(np.linspace(0, 0.95, 200))
+    pink = plt.cm.PiYG(np.linspace(0, 0.25, 40))
+    purple = plt.cm.PRGn(np.linspace(0, 0.25, 40))
+    cArr = np.vstack((specR, pink, purple))
+    cmap = pltcolors.LinearSegmentedColormap.from_list("cvd-reflectivity", cArr)
+    vmin=10
+    vmax=80
+    dataMask = np.where(np.logical_and(radarDS.unknown.data>=10, radarDS.unknown.data<=80), 0, 1)
+    rdr = ax.pcolormesh(radarDS.longitude, radarDS.latitude, np.ma.masked_array(radarDS.unknown, mask=dataMask), cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree(), zorder=1)
+    print("Plotted! "+dt.utcnow().strftime("%H:%M:%S"))
     ax.add_feature(cfeat.STATES.with_scale("50m"), linewidth=0.5, zorder=4)
     ax.add_feature(cfeat.COASTLINE.with_scale("50m"), linewidth=0.5, zorder=5)
     set_size(2560*px, 1440*px, ax=ax)
