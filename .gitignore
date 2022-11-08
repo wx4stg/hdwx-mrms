@@ -4,3 +4,5 @@ firstPlotDT.txt
 status.txt
 *lock.txt
 HDWX_helpers.py
+lastCleanDT.txt
+__pycache__/
