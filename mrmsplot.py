@@ -91,7 +91,7 @@ def plotRadar(radarFilePath):
     px = 1/plt.rcParams["figure.dpi"]
     fig.set_size_inches(2560*px, 1440*px)
     ax = plt.axes(projection=ccrs.epsg(3857))
-    specR = plt.cm.Spectral_r(np.linspace(0, 0.95, 200))
+    specR = plt.cm.Spectral_r(np.linspace(0, 1, 200))
     pink = plt.cm.PiYG(np.linspace(0, 0.25, 40))
     purple = plt.cm.PRGn_r(np.linspace(0.75, 1, 40))
     cArr = np.vstack((specR, pink, purple))
