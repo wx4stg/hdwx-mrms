@@ -49,17 +49,18 @@ def set_size(w,h, ax=None):
     ax.figure.set_size_inches(figw, figh)
 
 def addStationPlot(ax, validTime):
+    metarTime = validTime.replace(minute=0, second=0, microsecond=0)
     stationCatalog = TDSCatalog("https://thredds.ucar.edu/thredds/catalog/noaaport/text/metar/catalog.xml")
     airports = pd.read_csv(get_test_data("airport-codes.csv"))
     airports = airports[(airports["type"] == "large_airport") | (airports["type"] == "medium_airport") | (airports["type"] == "small_airport")]
     try:
-        dataset = stationCatalog.datasets.filter_time_nearest(validTime)
+        dataset = stationCatalog.datasets.filter_time_nearest(metarTime)
         dataset.download()
         [remove(file) for file in sorted(listdir) if "metar_" in file and file != dataset.name]
     except Exception as e:
-        print(stationCatalog.datasets.filter_time_nearest(validTime).remote_open().read())
+        print(stationCatalog.datasets.filter_time_nearest(metarTime).remote_open().read())
     if path.exists(dataset.name):
-        metarData = parse_metar_file(dataset.name, year=validTime.year, month=validTime.month)
+        metarData = parse_metar_file(dataset.name, year=metarTime.year, month=metarTime.month)
     else:
         return
     metarUnits = metarData.units
