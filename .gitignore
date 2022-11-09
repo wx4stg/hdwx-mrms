@@ -6,3 +6,4 @@ status.txt
 HDWX_helpers.py
 lastCleanDT.txt
 __pycache__/
+metar_*.txt
