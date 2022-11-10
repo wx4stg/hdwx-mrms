@@ -75,12 +75,12 @@ def addStationPlot(ax, validTime):
     stations = mpplots.StationPlot(ax, metarData["longitude"][overlap_prevent], metarData["latitude"][overlap_prevent], clip_on=True, transform=ccrs.PlateCarree(), fontsize=6)
     stations.plot_parameter("NW", metarData["air_temperature"][overlap_prevent].to(units.degF), path_effects=[withStroke(linewidth=1, foreground="white")])
     stations.plot_parameter("SW", metarData["dew_point_temperature"][overlap_prevent].to(units.degF), path_effects=[withStroke(linewidth=1, foreground="white")])
-    stations.plot_parameter("NE", metarData["air_pressure_at_sea_level"][overlap_prevent].to(units.hPa), formatter=lambda v: format(10 * v, '.0f')[-3:])
+    stations.plot_parameter("NE", metarData["air_pressure_at_sea_level"][overlap_prevent].to(units.hPa), formatter=lambda v: format(10 * v, '.0f')[-3:], path_effects=[withStroke(linewidth=1, foreground="white")])
     stations.plot_symbol((-1.5, 0), metarData['current_wx1_symbol'][overlap_prevent], mpplots.current_weather, path_effects=[withStroke(linewidth=1, foreground="white")], fontsize=9)
     if validTime.minute % 10 == 0:
         stations.plot_text((2, 0), metarData["station_id"][overlap_prevent], path_effects=[withStroke(linewidth=2, foreground="white")])
     stations.plot_symbol("C", metarData["cloud_coverage"][overlap_prevent], mpplots.sky_cover)
-    stations.plot_barb(metarData["u"][overlap_prevent], metarData["v"][overlap_prevent])
+    stations.plot_barb(metarData["u"][overlap_prevent], metarData["v"][overlap_prevent], sizes={"emptybarb" : 0})
     return ax
 
 def plotRadar(radarFilePath):
@@ -111,6 +111,7 @@ def plotRadar(radarFilePath):
         HDWX_helpers.writeJson(basePath, 0, validTime, validTime.strftime("%M.png"), validTime, ["23.5,-129", "51,-65"], 60)
         HDWX_helpers.dressImage(fig, ax, "National MRMS Reflectivity At Lowest Altitude", validTime=validTime, notice="Data provided by NOAA/NSSL", plotHandle=rdr, colorbarLabel="Reflectivity (dBZ)")
         title = fig.axes[2].get_children()[0]
+        axForXlabel = fig.axes[2]
     else:
         title = None
     Path(path.join(basePath, "output", "products", "radar", "national", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"))).mkdir(parents=True, exist_ok=True)
@@ -124,6 +125,7 @@ def plotRadar(radarFilePath):
     ax.set_box_aspect(9/16)
     if title is not None:
         title.set_text("Regional MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"))
+        axForXlabel.set_xlabel(axForXlabel.get_xlabel()+" -- Surface Obs Updated Hourly")
     Path(path.join(basePath, "output", "products", "radar", "regional", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"))).mkdir(parents=True, exist_ok=True)
     fig.savefig(path.join(basePath, "output", "products", "radar", "regional", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")))
     if hasHelpers:
