@@ -56,7 +56,7 @@ def addStationPlot(ax, validTime):
     try:
         dataset = stationCatalog.datasets.filter_time_nearest(metarTime)
         dataset.download()
-        [remove(file) for file in sorted(listdir) if "metar_" in file and file != dataset.name]
+        [remove(file) for file in sorted(listdir()) if "metar_" in file and file != dataset.name]
     except Exception as e:
         print(stationCatalog.datasets.filter_time_nearest(metarTime).remote_open().read())
     if path.exists(dataset.name):
