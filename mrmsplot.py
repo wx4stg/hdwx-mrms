@@ -85,6 +85,22 @@ def addStationPlot(ax, validTime):
 
 def plotRadar(radarFilePath):
     radarDS = xr.open_dataset(radarFilePath, engine="cfgrib")
+    if path.exists("cached_lons.csv") and path.exists("cached_lats.csv"):
+        lonsToPlot = pd.read_csv("cached_lons.csv", header=None).values.flatten()
+        latsToPlot = pd.read_csv("cached_lats.csv", header=None).values.flatten()
+    else:
+        lonPad = radarDS.longitude.data[1] - radarDS.longitude.data[0]
+        lonPad = lonPad + lonPad/4
+        latPad = radarDS.latitude.data[1] - radarDS.latitude.data[0]
+        latPad = latPad + latPad/4
+        radarDS = radarDS.sel(latitude=slice(axExtent[3], axExtent[2]+latPad), longitude=slice(axExtent[0]+360, axExtent[1]+lonPad+360))
+        lonsToTransform = np.tile(np.array([radarDS.longitude.data]), (radarDS.unknown.data.shape[0], 1))
+        latsToTransform = np.tile(radarDS.latitude.data, (radarDS.unknown.data.shape[1], 1)).transpose()
+        transformed_points = ccrs.epsg(3857).transform_points(ccrs.PlateCarree(), lonsToTransform, latsToTransform)
+        lonsToPlot = transformed_points[0, :, 0].flatten()
+        latsToPlot = transformed_points[:, 0, 1].flatten()
+        pd.DataFrame(lonsToPlot).to_csv("cached_lons.csv", index=False, header=False)
+        pd.DataFrame(latsToPlot).to_csv("cached_lats.csv", index=False, header=False)
     radarDS = radarDS.sel(latitude=slice(axExtent[3], axExtent[2]), longitude=slice(axExtent[0]+360, axExtent[1]+360))
     validTime = Timestamp(radarDS.time.data).to_pydatetime()
     fig = plt.figure()
@@ -99,7 +115,7 @@ def plotRadar(radarFilePath):
     vmin=10
     vmax=80
     dataMask = np.where(np.logical_and(radarDS.unknown.data>=10, radarDS.unknown.data<=80), 0, 1)
-    rdr = ax.pcolormesh(radarDS.longitude, radarDS.latitude, np.ma.masked_array(radarDS.unknown, mask=dataMask), cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree(), zorder=1)
+    rdr = ax.pcolorfast(lonsToPlot, latsToPlot, np.ma.masked_array(radarDS.unknown, mask=dataMask), cmap=cmap, vmin=vmin, vmax=vmax, zorder=1)
     ax.add_feature(cfeat.STATES.with_scale("50m"), linewidth=0.5, zorder=4)
     ax.add_feature(cfeat.COASTLINE.with_scale("50m"), linewidth=0.5, zorder=5)
     set_size(2560*px, 1440*px, ax=ax)
@@ -140,6 +156,7 @@ def plotRadar(radarFilePath):
     fig.savefig(path.join(basePath, "output", "products", "radar", "local", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")))
     if hasHelpers:
         HDWX_helpers.writeJson(basePath, 3, validTime, validTime.strftime("%M.png"), validTime, ["0,0", "0,0"], 60)
+    plt.close(fig)
 
 
 if __name__ == "__main__":

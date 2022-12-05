@@ -30,5 +30,7 @@ if __name__ == "__main__":
                     createTime = dt.fromtimestamp(path.getmtime(filepath))
                     if createTime < now - deleteAfter:
                         remove(filepath)
+        remove(path.join(basePath, "cached_lats.csv"))
+        remove(path.join(basePath, "cached_lons.csv"))
         remove(path.join(basePath, "status.txt"))
         remove(path.join(basePath, "lastCleanDT.txt"))

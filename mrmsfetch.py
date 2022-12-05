@@ -11,6 +11,7 @@ import requests
 import gzip
 import shutil
 import atexit
+from time import sleep
 
 basePath = path.realpath(path.dirname(__file__))
 
@@ -35,6 +36,7 @@ def downloadFile(fileName):
 
 
 if __name__ == "__main__":
+    sleep(5)
     Path(path.join(basePath, "input")).mkdir(parents=True, exist_ok=True)
     gribList = pd.read_html("https://mrms.ncep.noaa.gov/data/2D/ReflectivityAtLowestAltitude/")[0].dropna(how="any")
     gribList = gribList[~gribList.Name.str.contains("latest") == True].reset_index()
