@@ -1,0 +1,15 @@
+[Unit]
+Description=hdwx-mrms_fetch
+PartOf=hdwx.target
+
+[Service]
+ExecStart=$pathToPython mrmsfetch.py
+Restart=always
+RestartSec=30
+RuntimeMaxSec=600
+WorkingDirectory=$pathToClone/hdwx-mrms/
+User=$myUsername
+SyslogIdentifier=hdwx-mrms_fetch
+
+[Install]
+WantedBy=hdwx.target

@@ -1,0 +1,16 @@
+[Unit]
+Description=hdwx-mrms_plot
+PartOf=hdwx.target
+
+[Service]
+ExecStart=$pathToPython mrmsplot.py
+ExecStop=rsync -ulrH ./output/. $targetDir --exclude=productTypes/ --exclude="*.tmp"
+Restart=always
+RestartSec=30
+RuntimeMaxSec=600
+WorkingDirectory=$pathToClone/hdwx-mrms/
+User=$myUsername
+SyslogIdentifier=hdwx-mrms_plot
+
+[Install]
+WantedBy=hdwx.target

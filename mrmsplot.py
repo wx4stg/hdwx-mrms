@@ -2,7 +2,7 @@
 # Multi-Radar Multi-Sensor based mosaicing for python-based HDWX
 # Created 19 April 2022 by Sam Gardner <stgardner4@tamu.edu>
 
-from os import path, listdir, remove, system
+from os import path, listdir, remove
 import xarray as xr
 import numpy as np
 from matplotlib import pyplot as plt
@@ -17,10 +17,8 @@ from metpy import plots as mpplots
 from metpy.units import units
 from metpy.cbook import get_test_data
 from matplotlib.patheffects import withStroke
-from pandas import Timestamp
 from datetime import datetime as dt
 from pathlib import Path
-import atexit
 from siphon.catalog import TDSCatalog
 import pandas as pd
 
@@ -31,12 +29,6 @@ if path.exists(path.join(basePath, "HDWX_helpers.py")):
     import HDWX_helpers
     hasHelpers = True
 axExtent = [-129, -65, 23.5, 51]
-
-@atexit.register
-def exitFunc():
-    print("Plotting complete!")
-    remove(path.join(basePath, "plotter-lock.txt"))
-    system("bash generate.sh --no-cleanup &")
 
 def set_size(w,h, ax=None):
     if not ax: ax=plt.gca()
@@ -102,7 +94,7 @@ def plotRadar(radarFilePath):
         pd.DataFrame(lonsToPlot).to_csv("cached_lons.csv", index=False, header=False)
         pd.DataFrame(latsToPlot).to_csv("cached_lats.csv", index=False, header=False)
     radarDS = radarDS.sel(latitude=slice(axExtent[3], axExtent[2]), longitude=slice(axExtent[0]+360, axExtent[1]+360))
-    validTime = Timestamp(radarDS.time.data).to_pydatetime()
+    validTime = dt.strptime(radarFilePath.split("_")[-1].replace(".grib2", ""), "%Y%m%d-%H%M%S")
     fig = plt.figure()
     px = 1/plt.rcParams["figure.dpi"]
     fig.set_size_inches(2560*px, 1440*px)
