@@ -1,6 +1,5 @@
 input/
 output/
-firstPlotDT.txt
 HDWX_helpers.py
 __pycache__/
 metar_*.txt
