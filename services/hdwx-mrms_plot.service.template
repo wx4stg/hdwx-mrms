@@ -3,7 +3,7 @@ Description=hdwx-mrms_plot
 PartOf=hdwx.target
 
 [Service]
-ExecStart=$pathToPython mrmsplot.py
+ExecStart=$pathToPython mrmsplot.py $shouldGIS
 ExecStop=rsync -ulrH ./output/. $targetDir --exclude=productTypes/ --exclude="*.tmp"
 Restart=always
 RestartSec=30
