@@ -36,7 +36,7 @@ if __name__ == "__main__":
     alreadyDownloaded = listdir(path.join(basePath, "input"))
     for mosaicTime in reversed(gribList.index):
         if mosaicTime > dt.utcnow() - timedelta(hours=1):
-            runFile = path.join(basePath, "output", "metadata", "products", "0", mosaicTime.strftime("%Y%m%d%H00.json"))
+            runFile = path.join(basePath, "output", "metadata", "products", "3", mosaicTime.strftime("%Y%m%d%H00.json"))
             if path.exists(runFile):
                 with open(runFile) as jsonLoad:
                     runData = json.load(jsonLoad)
