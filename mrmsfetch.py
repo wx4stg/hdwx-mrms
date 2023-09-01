@@ -36,7 +36,6 @@ def downloadFile(fileName):
 
 if __name__ == "__main__":
     Path(path.join(basePath, "input")).mkdir(parents=True, exist_ok=True)
-    gribList = pd.read_html("https://mrms.ncep.noaa.gov/data/2D/ReflectivityAtLowestAltitude/")[0].dropna(how="any")
     try:
         gribList = pd.read_html("https://mrms.ncep.noaa.gov/data/2D/ReflectivityAtLowestAltitude/")[0].dropna(how="any")
     except urllib.error.URLError:
