@@ -27,7 +27,7 @@ def downloadFile(fileName):
         mrmsDataProc = subprocess.run(["curl", urlToFetch], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         mrmsData = mrmsDataProc.stdout
     with open(output, "wb") as fileWrite:
-        fileWrite.write(mrmsData.content)
+        fileWrite.write(mrmsData)
     with gzip.open(output, "rb") as f_in:
         with open(output.replace(".gz", ""), "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
