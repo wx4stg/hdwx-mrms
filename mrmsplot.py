@@ -129,7 +129,7 @@ def plotRadar(radarFilePath):
         fig.savefig(path.join(basePath, "output", "products", "radar", "national", validTime.strftime("%Y"), validTime.strftime("%m"), validTime.strftime("%d"), validTime.strftime("%H00"), validTime.strftime("%M.png")))
     addStationPlot(ax, validTime)
     ax.add_feature(mpplots.USCOUNTIES.with_scale("5m"), edgecolor="green", linewidth=0.25, zorder=2)
-    ax.set_extent([-110, -85, 23.5, 37])
+    ax.set_extent([-110, -85, 25, 37])
     ax.set_box_aspect(9/16)
     if title is not None:
         title.set_text("Regional MRMS Reflectivity At Lowest Altitude\nValid: "+validTime.strftime("%-d %b %Y %H%MZ"))
